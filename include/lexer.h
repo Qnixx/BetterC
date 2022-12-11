@@ -19,6 +19,7 @@ typedef enum {
 typedef struct {
   tokentype_t type;
   size_t val_int;
+  size_t line;
 } token_t;
 
 

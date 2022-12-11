@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include <stdint.h>
 #include <parser.h>
+#include <ast.h>
 
 
 static const char* outputfile = NULL;
@@ -26,6 +27,8 @@ static void _on_exit(void) {
   if (g_input_buf) {
     free(g_input_buf);
   }
+
+  destroy_ast_nodes();
 }
 
 

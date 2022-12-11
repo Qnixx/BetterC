@@ -69,7 +69,8 @@ uint8_t lexer_scan(token_t* out) {
   c = get_next_char();
   
   if (c == '\0') return 0;
-
+  
+  out->line = line_number;
   switch (c) {
     case ';':
       out->type = TT_SEMI;

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <parser.h>
 #include <ast.h>
+#include <gen_x64.h>
 
 
 static const char* outputfile = NULL;
@@ -29,6 +30,10 @@ static void _on_exit(void) {
   }
 
   destroy_ast_nodes();
+
+  if (g_outfile) {
+    fclose(g_outfile);
+  }
 }
 
 
@@ -71,9 +76,15 @@ int main(int argc, char** argv) {
         break;
     }
   }
-
+  
+  uint8_t has_infile = 0;
   for (uint32_t i = 1; i < argc; ++i) {
     if (*argv[i] != '-') {
+      if (has_infile) {
+        printf("Error: Compiling multiple files is not supported right now..\n");
+        exit(1);
+      }
+      has_infile = 1;
       compile(argv[i]);
     }
   }

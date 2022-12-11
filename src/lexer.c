@@ -90,7 +90,6 @@ uint8_t lexer_scan(token_t* out) {
       if (IS_DIGIT(c)) {
         out->type = TT_INTLIT;
         out->val_int = scanint(c);
-        printf("%d\n", out->val_int);
         break;
       }
 

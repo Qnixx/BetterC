@@ -5,6 +5,9 @@
 #include <parser.h>
 #include <ast.h>
 #include <gen_x64.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 static const char* outputfile = NULL;
@@ -14,6 +17,12 @@ char* g_input_buf = NULL;
 static void help(char** argv) {
   printf("Usage: %s inputfiles\n", *argv);
   exit(0);
+}
+
+static uint8_t is_dir(const char* fname) {
+  struct stat path;
+  stat(fname, &path);
+  return !(S_ISREG(path.st_mode));
 }
 
 
@@ -41,6 +50,11 @@ static void compile(const char* path) {
   in_fp = fopen(path, "r");
   if (!(in_fp)) {
     perror("Failed to open file");
+    exit(1);
+  }
+
+  if (is_dir(path)) {
+    printf("Cannot open directory as file!\n");
     exit(1);
   }
   

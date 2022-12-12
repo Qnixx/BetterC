@@ -1,6 +1,8 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
-void parse(void);
+#include <context.h>
+
+void parse(cc_context* cc_ctx);
 
 #endif

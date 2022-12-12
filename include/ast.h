@@ -8,7 +8,9 @@ typedef enum {
   A_SUB,
   A_MUL,
   A_DIV,
-  A_INTLIT
+  A_INTLIT,
+  A_FUNC,
+  A_ID,
 } ast_nodetype_t;
 
 
@@ -16,7 +18,11 @@ typedef struct AstNode {
   ast_nodetype_t op;
   struct AstNode* left;
   struct AstNode* right;
-  uint64_t val_int;
+
+  union {
+    uint64_t val_int;
+    uint64_t id;
+  };
 } astnode_t;
 
 

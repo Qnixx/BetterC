@@ -15,7 +15,12 @@ typedef enum {
   TT_PLUS,
   TT_MINUS,
   TT_ID,
+  TT_VOID,
   TT_U8,
+  TT_LPAREN,
+  TT_RPAREN,
+  TT_LBRACE,
+  TT_RBRACE
 } tokentype_t;
 
 

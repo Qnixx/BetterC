@@ -13,7 +13,7 @@ typedef enum {
 
 // Primitive types.
 typedef enum {
-  P_NONE,
+  P_VOID,
   P_U8
 } SYM_PTYPE;
 

@@ -86,4 +86,6 @@ void destroy_symbols(void) {
       free(g_symtbl[i].local_symtbl);
     }
   }
+
+  free(g_symtbl);
 }

@@ -87,6 +87,9 @@ static tokentype_t id(const char* id) {
     case 'u':
       if (strcmp(id, "u8") == 0) return TT_U8;
       else return TT_ID;
+    case 'v':
+      if (strcmp(id, "void") == 0) return TT_VOID;
+      else return TT_ID;
     default:
       return TT_ID;
   }
@@ -117,13 +120,25 @@ uint8_t lexer_scan(token_t* out, cc_context* cc_ctx) {
     case '-':
       out->type = TT_MINUS;
       break;
+    case '(':
+      out->type = TT_LPAREN;
+      break;
+    case ')':
+      out->type = TT_RPAREN;
+      break;
+    case '{':
+      out->type = TT_LBRACE;
+      break;
+    case '}':
+      out->type = TT_RBRACE;
+      break;
     default:
       if (IS_DIGIT(c)) {
         out->type = TT_INTLIT;
         out->val_int = scanint(c);
         break;
-      } else if (IS_ALPHA(c)) {
-        if (g_lex_id == NULL) {
+      } else if (IS_ALPHA(c) || c == '_') {
+        if (g_lex_id != NULL) {
           /*
            *  Free the last identifier
            *  if there was one.
@@ -131,7 +146,7 @@ uint8_t lexer_scan(token_t* out, cc_context* cc_ctx) {
            */
           free((char*)g_lex_id);
         }
-
+      
         g_lex_id = scan_identifier(c);
         out->type = id(g_lex_id);
         break;

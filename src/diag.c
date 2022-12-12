@@ -3,7 +3,7 @@
 
 
 static void diag_common(cc_context* cc_ctx, const char* fmt, va_list args) {
-  printf(fmt, args);
+  vprintf(fmt, args);
   printf("%s: line %d\n", cc_ctx->current_filename, cc_ctx->current_line);
 }
 
@@ -22,6 +22,7 @@ void cc_diag_warning(cc_context* cc_ctx, const char* fmt, ...) {
   va_start(ap, fmt);
   printf("\e[0;35mwarning: ");
   diag_common(cc_ctx, fmt, ap);
+  printf("\n");
   va_end(ap);
 }
 

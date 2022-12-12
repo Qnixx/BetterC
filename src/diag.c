@@ -34,3 +34,7 @@ void cc_diag_note(cc_context* cc_ctx, const char* fmt, ...) {
   diag_common(cc_ctx, fmt, ap);
   va_end(ap);
 }
+
+void cc_diag_showfunc(cc_context* cc_ctx) {
+  printf("\e[0;36mnote: function defined here: line %d\n", cc_ctx->func_def_line);
+}

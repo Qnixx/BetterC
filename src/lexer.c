@@ -90,6 +90,9 @@ static tokentype_t id(const char* id) {
     case 'v':
       if (strcmp(id, "void") == 0) return TT_VOID;
       else return TT_ID;
+    case 'r':
+      if (strcmp(id, "return") == 0) return TT_RETURN;
+      else return TT_ID;
     default:
       return TT_ID;
   }

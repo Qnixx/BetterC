@@ -5,6 +5,7 @@
 
 
 FILE* g_outfile = NULL;
+static cc_context* cc_ctx = NULL;
 
 static void cc_prologue(void) {
   fputs(
@@ -24,21 +25,49 @@ static void cc_func_prologue(size_t glob_sym_id) {
 }
 
 
-reg_t cc_x64_gen(astnode_t* node) {
+static void cc_return(reg_t r, uint8_t ret_val) {
+  if (ret_val) fprintf(g_outfile, "\tmov rax, %s\n", g_bregs[r]);
+  fputs("\tleave\n"
+        "\tretq\n", g_outfile);
+}
+
+
+static void cc_func_epilogue(void) {
+  if (!(cc_ctx->func_has_ret)) cc_return(-1, 0);
+}
+
+
+reg_t cc_x64_gen(astnode_t* node, reg_t reg, int parent_ast_top) {
   reg_t leftreg, rightreg;
 
   switch (node->op) {
     case A_FUNC:
       cc_func_prologue(node->left->id);
+      cc_x64_gen(node->right, -1, -1);
+      cc_func_epilogue();
+      return -1;
+    case A_RET:
+      if (node->left == NULL) {
+        cc_return(-1, 0);
+      } else {
+        reg_t r = cc_x64_gen(node->left, -1, -1);
+        cc_return(r, 1);
+      }
+      return -1;
+    case A_GLUE:
+      cc_x64_gen(node->left, -1, node->op);
+      freeall_regs();
+      cc_x64_gen(node->right, -1, node->op);
+      freeall_regs();
       return -1;
   }
-
+  
   if (node->left) {
-    leftreg = cc_x64_gen(node->left);
+    leftreg = cc_x64_gen(node->left, -1, -1);
   }
 
   if (node->right) {
-    rightreg = cc_x64_gen(node->right);
+    rightreg = cc_x64_gen(node->right, -1, -1);
   }
 
   switch (node->op) {
@@ -61,7 +90,8 @@ reg_t cc_x64_gen(astnode_t* node) {
 }
 
 
-void cc_gen_x64_init(void) {
+void cc_gen_x64_init(cc_context* _cc_ctx) {
+  cc_ctx = _cc_ctx;
   g_outfile = fopen("/tmp/bcc-out.asm", "w");
   cc_prologue();
 }

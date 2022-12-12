@@ -6,7 +6,7 @@ static astnode_t** allocd_nodes = NULL;
 static size_t allocd_nodes_idx = 0;
 
 
-astnode_t* mkastnode(ast_nodetype_t op, astnode_t* left, astnode_t* right, uint64_t val_int) {
+astnode_t* mkastnode(ast_nodetype_t op, astnode_t* left, astnode_t* mid, astnode_t* right, uint64_t val_int) {
   if (allocd_nodes == NULL) {
     allocd_nodes = malloc(sizeof(astnode_t*));
   }
@@ -14,6 +14,7 @@ astnode_t* mkastnode(ast_nodetype_t op, astnode_t* left, astnode_t* right, uint6
   astnode_t* n = malloc(sizeof(astnode_t));
   n->op = op;
   n->left = left;
+  n->mid = mid;
   n->right = right;
   n->val_int = val_int;
 
@@ -25,12 +26,12 @@ astnode_t* mkastnode(ast_nodetype_t op, astnode_t* left, astnode_t* right, uint6
 
 
 astnode_t* mkastleaf(ast_nodetype_t op, uint64_t val_int) {
-  return mkastnode(op, NULL, NULL, val_int);
+  return mkastnode(op, NULL, NULL, NULL, val_int);
 }
 
 
 astnode_t* mkastunary(ast_nodetype_t op, astnode_t* left, uint64_t val_int) {
-  return mkastnode(op, left, NULL, val_int);
+  return mkastnode(op, left, NULL, NULL, val_int);
 }
 
 

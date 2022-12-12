@@ -5,12 +5,16 @@
 #include <parser.h>
 #include <ast.h>
 #include <gen_x64.h>
+#include <symbol.h>
+#include <lexer.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <context.h>
 #include <unistd.h>
 
 
 static const char* outputfile = NULL;
+static cc_context cc_ctx;
 char* g_input_buf = NULL;
 
 
@@ -43,6 +47,18 @@ static void _on_exit(void) {
   if (g_outfile) {
     fclose(g_outfile);
   }
+
+  if (g_lex_id) {
+    free((char*)g_lex_id);
+  }
+
+  destroy_symbols();
+}
+
+
+static void init_ctx(const char* current_fname) {
+  cc_ctx.current_filename = current_fname;
+  cc_ctx.current_line = 1;
 }
 
 
@@ -57,7 +73,7 @@ static void compile(const char* path) {
     printf("Cannot open directory as file!\n");
     exit(1);
   }
-  
+
   fseek(in_fp, 0, SEEK_END);
   size_t sz = ftell(in_fp);
   fseek(in_fp, 0, SEEK_SET);
@@ -65,7 +81,9 @@ static void compile(const char* path) {
   g_input_buf = calloc(sz + 1, sizeof(char));
   fread(g_input_buf, sizeof(char), sz, in_fp);
   
-  parse();
+  /* Parse and pass a pointer to cc_ctx */
+  init_ctx(path);
+  parse(&cc_ctx);
 
   free(g_input_buf);
   g_input_buf = NULL;

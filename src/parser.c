@@ -4,25 +4,26 @@
 #include <gen_x64.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <diag.h>
 
 #define DEBUG 1
 
 
 static token_t last_token;
 
-static inline void passert(tokentype_t tt, const char* what) {
+static inline void passert(cc_context* cc_ctx, tokentype_t tt, const char* what) {
   if (last_token.type != tt) {
-    printf("Expected \"%s\" (line %d)\n", last_token.line);
+    cc_diag_err(cc_ctx, "expected \"%s\"\n", what);
     exit(1);
   }
 }
 
-static uint8_t scan_token(void) {
-  return lexer_scan(&last_token);
+static uint8_t scan_token(cc_context* cc_ctx) {
+  return lexer_scan(&last_token, cc_ctx);
 }
 
 
-static ast_nodetype_t tok2op(tokentype_t type) {
+static ast_nodetype_t tok2op(cc_context* cc_ctx, tokentype_t type) {
   switch (type) {
     case TT_PLUS:
       return A_ADD;
@@ -33,8 +34,8 @@ static ast_nodetype_t tok2op(tokentype_t type) {
     case TT_SLASH:
       return A_DIV;
     default:
-      printf("Syntax error (line %d)\n", last_token.line);
-      if (DEBUG) printf("DEBUG: Invalid token in %s()\n", __func__);
+      cc_diag_err(cc_ctx, "syntax error\n\n");
+      if (DEBUG) cc_diag_note(cc_ctx, "debug: tokentype %d\n", type);
       exit(1);
   }
 
@@ -42,16 +43,16 @@ static ast_nodetype_t tok2op(tokentype_t type) {
 }
 
 
-static astnode_t* primary_expr(void) {
+static astnode_t* primary_expr(cc_context* cc_ctx) {
   astnode_t* n;
 
   switch (last_token.type) {
     case TT_INTLIT:
       n = mkastleaf(A_INTLIT, last_token.val_int);
-      scan_token();
+      scan_token(cc_ctx);
       return n;
     default:
-      printf("Syntax error (line %d)\n", last_token.line);
+      printf("Syntax error (line %d)\n", cc_ctx->current_line);
       exit(1);
       break;
   }
@@ -60,22 +61,27 @@ static astnode_t* primary_expr(void) {
 }
 
 
-astnode_t* binary_expr(void) {
-  astnode_t* left = primary_expr();
+astnode_t* binary_expr(cc_context* cc_ctx) {
+  astnode_t* left = primary_expr(cc_ctx);
   if (last_token.type == TT_SEMI) {
     return left;
   }
 
-  ast_nodetype_t nodetype = tok2op(last_token.type);
-  scan_token();
+  ast_nodetype_t nodetype = tok2op(cc_ctx, last_token.type);
+  scan_token(cc_ctx);
 
-  astnode_t* right = binary_expr();
-  passert(TT_SEMI, ";");
+  astnode_t* right = binary_expr(cc_ctx);
+  passert(cc_ctx, TT_SEMI, ";");
   return mkastnode(nodetype, left, right, 0);
 }
 
-void parse(void) {
-  scan_token();
+
+
+void parse(cc_context* cc_ctx) {
+  int scan_ret = scan_token(cc_ctx);
   gen_x64_init();
-  gencode(binary_expr());
+
+  while (scan_ret) {
+    scan_ret = scan_token(cc_ctx);
+  }
 }

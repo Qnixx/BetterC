@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <context.h>
 
 
 typedef enum {
@@ -12,19 +13,21 @@ typedef enum {
   TT_STAR,
   TT_SLASH,
   TT_PLUS,
-  TT_MINUS
+  TT_MINUS,
+  TT_ID,
+  TT_U8,
 } tokentype_t;
 
 
 typedef struct {
   tokentype_t type;
   size_t val_int;
-  size_t line;
 } token_t;
 
 
 /* Returns 1 if there are more tokens left */
-uint8_t lexer_scan(token_t* out);
-
+uint8_t lexer_scan(token_t* out, cc_context* cc_ctx);
+extern const char* g_lex_id;
 
 #endif
+

@@ -24,7 +24,7 @@ static void cc_func_prologue(size_t glob_sym_id) {
 }
 
 
-reg_t gencode(astnode_t* node) {
+reg_t cc_x64_gen(astnode_t* node) {
   reg_t leftreg, rightreg;
 
   switch (node->op) {
@@ -34,11 +34,11 @@ reg_t gencode(astnode_t* node) {
   }
 
   if (node->left) {
-    leftreg = gencode(node->left);
+    leftreg = cc_x64_gen(node->left);
   }
 
   if (node->right) {
-    rightreg = gencode(node->right);
+    rightreg = cc_x64_gen(node->right);
   }
 
   switch (node->op) {
@@ -61,7 +61,7 @@ reg_t gencode(astnode_t* node) {
 }
 
 
-void gen_x64_init(void) {
+void cc_gen_x64_init(void) {
   g_outfile = fopen("/tmp/bcc-out.asm", "w");
   cc_prologue();
 }

@@ -170,11 +170,11 @@ static astnode_t* function_def(cc_context* cc_ctx) {
 
 void parse(cc_context* cc_ctx) {
   int scan_ret = scan_token(cc_ctx);
-  gen_x64_init();
+  cc_gen_x64_init();
   init_symtbls();
 
   while (scan_ret) {
-    gencode(function_def(cc_ctx));
+    cc_x64_gen(function_def(cc_ctx));
     // gencode(binary_expr(cc_ctx));
     scan_ret = scan_token(cc_ctx);
   }

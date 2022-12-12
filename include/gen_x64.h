@@ -8,8 +8,8 @@
 typedef int8_t reg_t;
 
 
-reg_t gencode(astnode_t* node);
-void gen_x64_init(void);
+reg_t cc_x64_gen(astnode_t* node);
+void cc_gen_x64_init(void);
 extern FILE* g_outfile;
 
 

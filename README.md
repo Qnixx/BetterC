@@ -1,4 +1,8 @@
 # BetterC, a better C.
 
 ## Building:
-``make``
+```
+bash autogen.sh
+./configure
+make
+```

@@ -26,6 +26,11 @@ static inline void spare(void) {
 }
 
 
+static inline char peek(unsigned int n) {
+  return g_input_buf[buf_idx + n];
+}
+
+
 static void skip_chr(cc_context* cc_ctx) {
   while (SHOULD_IGNORE(g_input_buf[buf_idx])) {
     if (g_input_buf[buf_idx] == '\0') {
@@ -53,7 +58,7 @@ static int chrpos(const char* s, char c) {
 }
 
 
-static int scanint(char c) {
+static uint64_t scanint(char c) {
   int k = 0, val = 0;
 
   while ((k = chrpos("0123456789", c)) >= 0) {
@@ -64,6 +69,22 @@ static int scanint(char c) {
   /* Spare the non integer */
   spare();
   return val;
+}
+
+
+static uint64_t scan_hex(char c) {
+  c = get_next_char();
+  
+  char* buf = calloc(2, sizeof(char));
+  size_t buf_idx = 0;
+  while (IS_DIGIT(c) || IS_ALPHA(c)) {
+    buf[buf_idx++] = c;
+    buf = realloc(buf, sizeof(char) * (buf_idx + 2));
+    c = get_next_char();
+  }
+
+  spare();
+  return strtol(buf, NULL, 16);
 }
 
 
@@ -141,7 +162,13 @@ uint8_t lexer_scan(token_t* out, cc_context* cc_ctx) {
     default:
       if (IS_DIGIT(c)) {
         out->type = TT_INTLIT;
-        out->val_int = scanint(c);
+
+        if (get_next_char() == 'x') {
+          out->val_int = scan_hex(c);
+        } else {
+          spare();
+          out->val_int = scanint(c);
+        }
         break;
       } else if (IS_ALPHA(c) || c == '_') {
         if (g_lex_id != NULL) {

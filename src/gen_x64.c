@@ -46,7 +46,11 @@ reg_t cc_x64_gen(astnode_t* node, reg_t reg, int parent_ast_top) {
   switch (node->op) {
     case A_FUNC:
       cc_func_prologue(node->left->id);
-      cc_x64_gen(node->right, -1, -1);
+
+      if (node->right != NULL) {
+        cc_x64_gen(node->right, -1, -1);
+      }
+
       cc_func_epilogue();
       return -1;
     case A_RET:

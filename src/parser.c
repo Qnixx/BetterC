@@ -182,7 +182,6 @@ static astnode_t* compound_statement(cc_context* cc_ctx) {
           exit(1);
         }
 
-        scan_token(cc_ctx);
         looping = 0;
         continue;
       default:
@@ -251,6 +250,10 @@ static astnode_t* function_def(cc_context* cc_ctx, SYM_LINKAGE linkage) {
     exit(1);
   }
   
+  if (last_token.type == TT_RBRACE) {
+    return mkastunary(A_FUNC, mkastleaf(A_ID, cc_ctx->current_func_id), 0);
+  }
+
   return mkastnode(A_FUNC, mkastleaf(A_ID, cc_ctx->current_func_id), NULL, compound_statement(cc_ctx), 0);
 }
 
@@ -269,7 +272,6 @@ void parse(cc_context* cc_ctx) {
     }
 
     cc_x64_gen(tree, -1, -1);
-    // gencode(binary_expr(cc_ctx));
     scan_ret = scan_token(cc_ctx);
   }
 

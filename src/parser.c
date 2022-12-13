@@ -173,7 +173,7 @@ static astnode_t* compound_statement(cc_context* cc_ctx) {
       case TT_RETURN:
         if (cc_ctx->func_has_ret) warn_stmt_unreachable(cc_ctx);
         tree = return_statement(cc_ctx);
-        scan_token(cc_ctx);
+        if (last_token.type == TT_RBRACE) return tree;
         break;
       case TT_RBRACE:
         if (!(cc_ctx->func_has_ret) && cc_ctx->func_ptype != P_VOID) {
@@ -214,10 +214,13 @@ static astnode_t* function_def(cc_context* cc_ctx, SYM_LINKAGE linkage) {
   /* Ensure there is no redefinition */
   check_glob_redef(cc_ctx, g_lex_id);
 
-  /* Push the global symbol */
+  /* Setup function context values */
+  cc_ctx->func_has_ret = 0;
   cc_ctx->current_func_id = symtbl_push_glob(g_lex_id, S_FUNCTION);
   cc_ctx->func_ptype = ptype;
   cc_ctx->func_is_global = linkage != L_INTERNAL;
+
+  /* Push the global symbol */
   g_symtbl[cc_ctx->current_func_id].is_global = 1;
   g_symtbl[cc_ctx->current_func_id].ptype = ptype;
 

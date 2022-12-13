@@ -1,3 +1,4 @@
-u8 func(void) {
-  return 1;
+global u8 
+main(void) {
+  return 0;
 }

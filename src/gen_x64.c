@@ -19,6 +19,7 @@ static void cc_prologue(void) {
 
 
 static void cc_func_prologue(size_t glob_sym_id) {
+  if (cc_ctx->func_is_global) fprintf(g_outfile, "global $%s\n", g_symtbl[glob_sym_id].name);
   fprintf(g_outfile, "$%s:\n"
                      "\tpush rbp\n"
                      "\tmov rbp, rsp\n", g_symtbl[glob_sym_id].name);
@@ -28,7 +29,7 @@ static void cc_func_prologue(size_t glob_sym_id) {
 static void cc_return(reg_t r, uint8_t ret_val) {
   if (ret_val) fprintf(g_outfile, "\tmov rax, %s\n", g_bregs[r]);
   fputs("\tleave\n"
-        "\tretq\n", g_outfile);
+        "\tretq\n\n", g_outfile);
 }
 
 

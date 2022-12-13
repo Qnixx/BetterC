@@ -17,6 +17,12 @@ typedef enum {
   P_U8
 } SYM_PTYPE;
 
+
+typedef enum {
+  L_INTERNAL,
+  L_EXTERNAL
+} SYM_LINKAGE;
+
 struct symbol {
   const char* name;
   SYM_STYPE stype;

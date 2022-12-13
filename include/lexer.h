@@ -22,6 +22,7 @@ typedef enum {
   TT_LBRACE,
   TT_RBRACE,
   TT_RETURN,
+  TT_GLOBAL
 } tokentype_t;
 
 

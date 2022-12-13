@@ -93,6 +93,9 @@ static tokentype_t id(const char* id) {
     case 'r':
       if (strcmp(id, "return") == 0) return TT_RETURN;
       else return TT_ID;
+    case 'g':
+      if (strcmp(id, "global") == 0) return TT_GLOBAL;
+      else return TT_ID;
     default:
       return TT_ID;
   }

@@ -9,6 +9,8 @@
 
 #define DEBUG 1
 
+static astnode_t* function_def(cc_context* cc_ctx, SYM_LINKAGE linkage);
+
 static token_t last_token;
 static const char* const PTYPE_STR[] = {
   [P_VOID] = "void",
@@ -201,7 +203,7 @@ static astnode_t* compound_statement(cc_context* cc_ctx) {
 }
 
 
-static astnode_t* function_def(cc_context* cc_ctx) {
+static astnode_t* function_def(cc_context* cc_ctx, SYM_LINKAGE linkage) {
   cc_ctx->func_def_line = cc_ctx->current_line;
   assert_type(cc_ctx);  /* Ensure there's a type */
 
@@ -215,6 +217,7 @@ static astnode_t* function_def(cc_context* cc_ctx) {
   /* Push the global symbol */
   cc_ctx->current_func_id = symtbl_push_glob(g_lex_id, S_FUNCTION);
   cc_ctx->func_ptype = ptype;
+  cc_ctx->func_is_global = linkage != L_INTERNAL;
   g_symtbl[cc_ctx->current_func_id].is_global = 1;
   g_symtbl[cc_ctx->current_func_id].ptype = ptype;
 
@@ -254,7 +257,14 @@ void parse(cc_context* cc_ctx) {
   init_symtbls();
 
   while (scan_ret) {
-    astnode_t* tree = function_def(cc_ctx);
+    astnode_t* tree;
+    if (last_token.type == TT_GLOBAL) {
+      scan_token(cc_ctx);
+      tree = function_def(cc_ctx, L_EXTERNAL);
+    } else {
+      tree = function_def(cc_ctx, L_INTERNAL);
+    }
+
     cc_x64_gen(tree, -1, -1);
     // gencode(binary_expr(cc_ctx));
     scan_ret = scan_token(cc_ctx);

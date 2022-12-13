@@ -53,7 +53,7 @@ static ast_nodetype_t tok2op(cc_context* cc_ctx, tokentype_t type) {
     case TT_SLASH:
       return A_DIV;
     default:
-      cc_diag_err(cc_ctx, "syntax error\n\n");
+      cc_diag_err(cc_ctx, "syntax error\n");
       if (DEBUG) cc_diag_note(cc_ctx, "debug: tokentype %d\n", type);
       exit(1);
   }

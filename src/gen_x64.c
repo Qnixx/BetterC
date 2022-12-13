@@ -2,6 +2,8 @@
 #include <reg.h>
 #include <symbol.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 FILE* g_outfile = NULL;
@@ -27,7 +29,7 @@ static void cc_func_prologue(size_t glob_sym_id) {
 
 
 static void cc_return(reg_t r, uint8_t ret_val) {
-  if (ret_val) fprintf(g_outfile, "\tmov rax, %s\n", g_bregs[r]);
+  if (ret_val) fprintf(g_outfile, "\tmovzx rax, %s\n", g_bregs[r]);
   fputs("\tleave\n"
         "\tretq\n\n", g_outfile);
 }
@@ -95,4 +97,14 @@ void cc_gen_x64_init(cc_context* _cc_ctx) {
   cc_ctx = _cc_ctx;
   g_outfile = fopen("/tmp/bcc-out.asm", "w");
   cc_prologue();
+}
+
+
+void cc_gen_x64_elf(void) {
+  fclose(g_outfile);
+  g_outfile = NULL;
+
+  system("nasm -felf64 /tmp/bcc-out.asm && ld /tmp/bcc-out.o /lib/bcc/crt0.o -o ./a.out");
+  remove("/tmp/bcc-out.asm");
+  remove("/tmp/bcc-obj-out.o");
 }

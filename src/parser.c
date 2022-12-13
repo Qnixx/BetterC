@@ -269,4 +269,6 @@ void parse(cc_context* cc_ctx) {
     // gencode(binary_expr(cc_ctx));
     scan_ret = scan_token(cc_ctx);
   }
+
+  cc_gen_x64_elf();
 }

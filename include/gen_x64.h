@@ -11,6 +11,7 @@ typedef int8_t reg_t;
 
 reg_t cc_x64_gen(astnode_t* node, reg_t reg, int parent_ast_top);
 void cc_gen_x64_init(cc_context* _cc_ctx);
+void cc_gen_x64_elf(void);
 extern FILE* g_outfile;
 
 

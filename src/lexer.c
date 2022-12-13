@@ -84,7 +84,10 @@ static uint64_t scan_hex(char c) {
   }
 
   spare();
-  return strtol(buf, NULL, 16);
+
+  uint64_t val = strtol(buf, NULL, 16);
+  free(buf);
+  return val;
 }
 
 

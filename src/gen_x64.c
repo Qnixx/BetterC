@@ -67,6 +67,10 @@ reg_t cc_x64_gen(astnode_t* node, reg_t reg, int parent_ast_top) {
       cc_x64_gen(node->right, -1, node->op);
       freeall_regs();
       return -1;
+    case A_BUILTIN_LINE:
+      /* Store the line number in the register */
+      reg_t line_reg = reg_load(node->val_int);
+      return line_reg;
   }
   
   if (node->left) {

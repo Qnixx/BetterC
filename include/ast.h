@@ -13,6 +13,7 @@ typedef enum {
   A_ID,
   A_GLUE,
   A_RET,
+  A_BUILTIN_LINE,
 } ast_nodetype_t;
 
 

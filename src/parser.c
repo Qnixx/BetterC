@@ -70,8 +70,12 @@ static astnode_t* primary_expr(cc_context* cc_ctx) {
       n = mkastleaf(A_INTLIT, last_token.val_int);
       scan_token(cc_ctx);
       return n;
+    case TT_BUILTIN_LINE:
+      n = mkastleaf(A_BUILTIN_LINE, cc_ctx->current_line);
+      scan_token(cc_ctx);
+      return n;
     default:
-      printf("Syntax error (line %d)\n", cc_ctx->current_line);
+      cc_diag_err(cc_ctx, "syntax error\n");
       exit(1);
       break;
   }
@@ -184,6 +188,9 @@ static astnode_t* compound_statement(cc_context* cc_ctx) {
 
         looping = 0;
         continue;
+      case TT_BUILTIN_LINE:
+        tree = mkastleaf(A_BUILTIN_LINE, 0);
+        break;
       default:
         cc_diag_err(cc_ctx, "syntax error\n");
         exit(1);

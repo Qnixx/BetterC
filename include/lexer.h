@@ -22,7 +22,10 @@ typedef enum {
   TT_LBRACE,
   TT_RBRACE,
   TT_RETURN,
-  TT_GLOBAL
+  TT_GLOBAL,
+
+  /* builtins */
+  TT_BUILTIN_LINE,        /* __builtin_line  - is the current line number */
 } tokentype_t;
 
 
